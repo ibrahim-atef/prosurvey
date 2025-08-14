@@ -1,0 +1,251 @@
+# Learn Surveying - Flutter App
+
+أول منصة تعليمية في مصر لشرح مواد معهد المساحة أونلاين
+
+## Overview
+
+Learn Surveying is a comprehensive Flutter mobile application designed for surveying institute students in Egypt. The app provides educational content including courses, videos, PDFs, exams, and more, following Clean Architecture principles.
+
+## Features
+
+### Authentication & Registration
+- Login with email and password
+- Registration with comprehensive user information:
+  - Full Name (Arabic text support)
+  - Email (must end with @gmail.com)
+  - Password & Confirm Password
+  - WhatsApp Number
+  - Institute selection (المطرية, أسيوط, قنا, الإسكندرية)
+  - Year selection (سنة أولى, سنة ثانية قسم مساحة, سنة ثانية قسم ري وصرف)
+  - Optional profile picture upload
+
+### Dashboard
+- Welcome message with user's name
+- Institute and year information
+- Subscription status and remaining days
+- Navigation menu to all app sections
+
+### Courses
+- Subject listing based on institute and year
+- Course content including:
+  - Videos with online playback
+  - PDF files for viewing
+  - Downloadable sheets
+- Content counts for each subject
+
+### Exams
+- MCQ-based exams for each subject
+- Real-time scoring and results
+- Exam history and performance tracking
+
+### Contact Us
+- Multiple phone numbers for support
+- Direct calling functionality
+- WhatsApp integration
+
+## Technical Architecture
+
+### Clean Architecture Implementation
+The app follows Clean Architecture principles with clear separation of concerns:
+
+#### Domain Layer
+- **Entities**: Core business objects (User, Subject, Exam, CourseContent)
+- **Use Cases**: Business logic implementation
+- **Repository Interfaces**: Abstract data access contracts
+
+#### Data Layer
+- **Models**: Data transfer objects extending entities
+- **Repositories**: Concrete implementations of repository interfaces
+- **Data Sources**: Remote (API) and local (SharedPreferences) data sources
+
+#### Presentation Layer
+- **BLoCs**: State management using flutter_bloc
+- **Screens**: UI components and screens
+- **Widgets**: Reusable UI components
+
+### Dependencies
+
+#### State Management
+- `flutter_bloc`: BLoC pattern implementation
+- `equatable`: Value equality for objects
+- `dartz`: Functional programming utilities
+
+#### Network & Storage
+- `dio`: HTTP client for API calls
+- `shared_preferences`: Local data storage
+- `get_it`: Dependency injection
+
+#### UI & Media
+- `video_player`: Video playback functionality
+- `syncfusion_flutter_pdfviewer`: PDF viewing
+- `image_picker`: Image selection
+- `cached_network_image`: Image caching
+- `flutter_spinkit`: Loading animations
+
+#### Utilities
+- `url_launcher`: External app launching
+- `path_provider`: File system access
+- `permission_handler`: Device permissions
+
+### Key Features
+
+#### Arabic Localization
+- Full RTL support
+- Arabic text throughout the app
+- Cairo font family for better Arabic rendering
+
+#### Responsive Design
+- Material Design 3 implementation
+- Consistent theming across the app
+- Adaptive layouts for different screen sizes
+
+#### Error Handling
+- Comprehensive error states
+- User-friendly error messages
+- Network failure handling
+
+## Project Structure
+
+```
+lib/
+├── core/
+│   ├── di/
+│   │   └── injection_container.dart
+│   ├── error/
+│   │   └── failures.dart
+│   └── theme/
+│       └── app_theme.dart
+├── data/
+│   ├── datasources/
+│   │   ├── local/
+│   │   │   └── local_storage.dart
+│   │   └── remote/
+│   │       └── api_client.dart
+│   ├── models/
+│   │   ├── user_model.dart
+│   │   ├── subject_model.dart
+│   │   ├── exam_model.dart
+│   │   └── course_content_model.dart
+│   └── repositories/
+│       ├── auth_repository_impl.dart
+│       ├── course_repository_impl.dart
+│       └── exam_repository_impl.dart
+├── domain/
+│   ├── entities/
+│   │   ├── user.dart
+│   │   ├── subject.dart
+│   │   ├── exam.dart
+│   │   └── course_content.dart
+│   ├── repositories/
+│   │   ├── auth_repository.dart
+│   │   ├── course_repository.dart
+│   │   └── exam_repository.dart
+│   └── usecases/
+│       ├── auth/
+│       │   ├── login_usecase.dart
+│       │   ├── register_usecase.dart
+│       │   └── logout_usecase.dart
+│       ├── courses/
+│       │   ├── get_subjects_usecase.dart
+│       │   └── get_course_content_usecase.dart
+│       └── exams/
+│           ├── get_exams_usecase.dart
+│           └── submit_exam_usecase.dart
+└── presentation/
+    ├── blocs/
+    │   ├── auth/
+    │   │   ├── auth_bloc.dart
+    │   │   ├── auth_event.dart
+    │   │   └── auth_state.dart
+    │   ├── courses/
+    │   │   ├── courses_bloc.dart
+    │   │   ├── courses_event.dart
+    │   │   └── courses_state.dart
+    │   └── exams/
+    │       ├── exams_bloc.dart
+    │       ├── exams_event.dart
+    │       └── exams_state.dart
+    ├── screens/
+    │   ├── splash_screen.dart
+    │   ├── login_screen.dart
+    │   ├── register_screen.dart
+    │   ├── dashboard_screen.dart
+    │   ├── courses_screen.dart
+    │   ├── course_content_screen.dart
+    │   ├── exams_screen.dart
+    │   ├── videos_screen.dart
+    │   ├── pdfs_screen.dart
+    │   ├── sheets_screen.dart
+    │   ├── contact_us_screen.dart
+    │   ├── video_player_screen.dart
+    │   └── pdf_viewer_screen.dart
+    └── widgets/
+        ├── custom_button.dart
+        ├── custom_text_field.dart
+        ├── subject_card.dart
+        └── subscription_card.dart
+```
+
+## Getting Started
+
+### Prerequisites
+- Flutter 3.0.5 or higher
+- Dart 3.0.0 or higher
+- Android Studio / VS Code
+
+### Installation
+
+1. Clone the repository:
+```bash
+git clone <repository-url>
+cd ProSurvey
+```
+
+2. Install dependencies:
+```bash
+flutter pub get
+```
+
+3. Run the app:
+```bash
+flutter run
+```
+
+### Configuration
+
+1. **API Configuration**: Update the base URL in `lib/data/datasources/remote/api_client.dart`
+2. **Fonts**: Add Cairo font files to `assets/fonts/` directory
+3. **Assets**: Add required images, videos, and PDFs to respective asset directories
+
+## API Integration
+
+The app is designed to work with a RESTful API. Key endpoints include:
+
+- `POST /auth/login` - User authentication
+- `POST /auth/register` - User registration
+- `GET /subjects` - Get subjects by institute and year
+- `GET /content` - Get course content by subject and type
+- `GET /exams` - Get exams by subject
+- `POST /exams/{id}/submit` - Submit exam answers
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
+
+## License
+
+This project is licensed under the MIT License.
+
+## Support
+
+For support and questions, contact us:
+- Phone: 01229159167, 01019346005, 01116163849, 01203707408
+- WhatsApp: Available through the app
+
+---
+
+**Note**: This is a complete Flutter application following Clean Architecture principles. The app includes all the required features mentioned in the specifications and is ready for further development and customization.

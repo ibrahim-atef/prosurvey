@@ -1,0 +1,80 @@
+name: prosurvey
+description: Learn Surveying - First Educational Platform in Egypt for Surveying Institute Materials Online
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.5 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  # UI & Icons
+  cupertino_icons: ^1.0.2
+  
+  # State Management
+  flutter_bloc:
+  equatable:
+  dartz:
+  
+  # Dependency Injection
+  get_it:
+  
+  # HTTP Client
+  dio:
+  
+  # Local Storage
+  shared_preferences:
+  
+  # Image Handling
+  image_picker:
+  cached_network_image:
+  
+  # Video Player
+  video_player:
+  chewie:
+  # PDF Viewer
+  syncfusion_flutter_pdfviewer:
+  
+  # File Handling
+  path_provider:
+  permission_handler:
+  
+  # URL Launcher
+  url_launcher:
+  
+  # Form Validation
+  form_validator:
+  
+  # Loading & Error Handling
+  loading_animation_widget:
+  
+  # Localization
+  intl:
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints:
+
+dependency_overrides:
+
+
+flutter:
+  uses-material-design: true
+  
+  assets:
+    - assets/fonts/
+
+  fonts:
+    - family: Cairo
+      fonts:
+        - asset: assets/fonts/Cairo-Regular.ttf
+        - asset: assets/fonts/Cairo-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Cairo-Medium.ttf
+          weight: 500
