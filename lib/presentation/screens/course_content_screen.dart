@@ -5,6 +5,7 @@ import '../../core/theme/app_theme.dart';
 import '../blocs/courses/courses_bloc.dart';
 import '../../domain/entities/subject.dart';
 import '../../domain/entities/course_content.dart';
+import '../../domain/entities/unit_content.dart';
 import 'video_player_screen.dart';
 import 'pdf_viewer_screen.dart';
 
@@ -39,9 +40,29 @@ class _CourseContentScreenState extends State<CourseContentScreen>
 
   void _loadContent() {
     context.read<CoursesBloc>().add(LoadCourseContent(
-      subjectId: widget.subject.id,
+      subjectId: widget.subject.id.toString(),
       type: ContentType.video,
     ));
+  }
+
+  // Helper function to convert CourseContent to ContentItem
+  ContentItem _convertToContentItem(CourseContent content) {
+    return ContentItem(
+      id: int.tryParse(content.id) ?? 0,
+      title: content.title,
+      description: content.description ?? '',
+      filePath: content.url,
+      fileSizeMb: content.fileSize != null ? '${(content.fileSize! / (1024 * 1024)).toStringAsFixed(2)}' : '0',
+      durationMinutes: content.duration != null ? content.duration! ~/ 60 : null,
+      thumbnailPath: content.thumbnail,
+      isFree: 1,
+      displayOrder: 1,
+      downloadCount: 0,
+      viewCount: 0,
+      uploadDate: DateTime.now().toString(),
+      contentTypeId: content.type == ContentType.video ? 1 : 2,
+      typeName: content.type == ContentType.video ? 'video' : 'pdf',
+    );
   }
 
   @override
@@ -160,12 +181,14 @@ class _CourseContentScreenState extends State<CourseContentScreen>
   }
 
   void _openContent(CourseContent content) {
+    final contentItem = _convertToContentItem(content);
+    
     switch (content.type) {
       case ContentType.video:
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => VideoPlayerScreen(content: content),
+            builder: (_) => VideoPlayerScreen(content: contentItem),
           ),
         );
         break;
@@ -173,12 +196,18 @@ class _CourseContentScreenState extends State<CourseContentScreen>
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => PDFViewerScreen(content: content),
+            builder: (_) => PDFViewerScreen(content: contentItem),
           ),
         );
         break;
       case ContentType.sheet:
         // Handle sheet download/view
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('سيتم إضافة عارض الملفات قريباً'),
+            backgroundColor: AppTheme.primaryColor,
+          ),
+        );
         break;
     }
   }

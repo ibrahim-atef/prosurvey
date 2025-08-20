@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
-import '../../core/di/injection_container.dart';
 import '../../core/theme/app_theme.dart';
+import '../../domain/entities/institute.dart';
 import '../blocs/auth/auth_bloc.dart';
+import '../blocs/institutes/institutes_bloc.dart';
+import '../blocs/institutes/institutes_event.dart';
+import '../blocs/institutes/institutes_state.dart';
 import '../widgets/custom_text_field.dart';
 import '../widgets/custom_button.dart';
 import 'dashboard_screen.dart';
@@ -23,24 +26,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _confirmPasswordController = TextEditingController();
   final _whatsappController = TextEditingController();
   
-  String? _selectedInstitute;
-  String? _selectedYear;
+  Institute? _selectedInstitute;
+  AcademicProgram? _selectedProgram;
   String? _profileImagePath;
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
+  List<Institute> _institutes = [];
+  List<AcademicProgram> _academicPrograms = [];
 
-  final List<String> _institutes = [
-    'المطرية',
-    'أسيوط',
-    'قنا',
-    'الإسكندرية',
-  ];
-
-  final List<String> _years = [
-    'سنة أولى',
-    'سنة ثانية قسم مساحة',
-    'سنة ثانية قسم ري وصرف',
-  ];
+  @override
+  void initState() {
+    super.initState();
+    // تحميل المعاهد عند فتح الشاشة
+    context.read<InstitutesBloc>().add(const LoadInstitutes());
+  }
 
   @override
   void dispose() {
@@ -66,14 +65,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
   void _register() {
     if (_formKey.currentState!.validate() && 
         _selectedInstitute != null && 
-        _selectedYear != null) {
+        _selectedProgram != null) {
       context.read<AuthBloc>().add(RegisterRequested(
         fullName: _fullNameController.text.trim(),
         email: _emailController.text.trim(),
         password: _passwordController.text,
+        passwordConfirmation: _confirmPasswordController.text,
+        instituteId: _selectedInstitute!.id,
+        academicProgramId: _selectedProgram!.id,
         whatsappNumber: _whatsappController.text.trim(),
-        institute: _selectedInstitute!,
-        year: _selectedYear!,
         profileImage: _profileImagePath,
       ));
     }
@@ -87,6 +87,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
         title: const Text('إنشاء حساب جديد',style: TextStyle(color: Colors.black) ,),
         backgroundColor: Colors.transparent,
         elevation: 0,
+        leading: IconButton(
+          icon: const Icon(
+            Icons.arrow_back,
+            color: Colors.black,
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ) ,
       ),
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
@@ -112,6 +121,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  // Institutes Loading
+                  BlocBuilder<InstitutesBloc, InstitutesState>(
+                    builder: (context, state) {
+                      if (state is InstitutesLoaded) {
+                        _institutes = state.institutes;
+                      }
+                      return const SizedBox.shrink();
+                    },
+                  ),
+                  
                   // Full Name Field
                   CustomTextField(
                     controller: _fullNameController,
@@ -221,104 +240,88 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   const SizedBox(height: 20),
 
                   // Institute Dropdown
-                  DropdownButtonFormField<String>(
-                    value: _selectedInstitute,
-                    decoration: const InputDecoration(
-                      labelText: 'المعهد',
-                      prefixIcon: Icon(Icons.school),
-                      border: OutlineInputBorder(),
-                    ),
-                    items: _institutes.map((institute) {
-                      return DropdownMenuItem(
-                        value: institute,
-                        child: Text(institute),
-                      );
-                    }).toList(),
-                    onChanged: (value) {
-                      setState(() {
-                        _selectedInstitute = value;
-                      });
-                    },
-                    validator: (value) {
-                      if (value == null) {
-                        return 'يرجى اختيار المعهد';
+                  BlocBuilder<InstitutesBloc, InstitutesState>(
+                    builder: (context, state) {
+                      if (state is InstitutesLoading) {
+                        return const Center(
+                          child: Padding(
+                            padding: EdgeInsets.all(16.0),
+                            child: CircularProgressIndicator(),
+                          ),
+                        );
                       }
-                      return null;
+                      
+                      return DropdownButtonFormField<Institute>(
+                        value: _selectedInstitute,
+                        decoration: const InputDecoration(
+                          labelText: 'المعهد',
+                          prefixIcon: Icon(Icons.school),
+                          border: OutlineInputBorder(),
+                        ),
+                        items: _institutes.map((institute) {
+                          return DropdownMenuItem(
+                            value: institute,
+                            child: Text(institute.name),
+                          );
+                        }).toList(),
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedInstitute = value;
+                            _selectedProgram = null; // Reset program when institute changes
+                          });
+                          // Load academic programs for selected institute
+                          if (value != null) {
+                            context.read<InstitutesBloc>().add(LoadAcademicPrograms(instituteId: value.id));
+                          }
+                        },
+                        validator: (value) {
+                          if (value == null) {
+                            return 'يرجى اختيار المعهد';
+                          }
+                          return null;
+                        },
+                      );
                     },
                   ),
                   const SizedBox(height: 20),
 
-                  // Year Dropdown
-                  DropdownButtonFormField<String>(
-                    value: _selectedYear,
-                    decoration: const InputDecoration(
-                      labelText: 'السنة الدراسية',
-                      prefixIcon: Icon(Icons.grade),
-                      border: OutlineInputBorder(),
-                    ),
-                    items: _years.map((year) {
-                      return DropdownMenuItem(
-                        value: year,
-                        child: Text(year),
-                      );
-                    }).toList(),
-                    onChanged: (value) {
-                      setState(() {
-                        _selectedYear = value;
-                      });
-                    },
-                    validator: (value) {
-                      if (value == null) {
-                        return 'يرجى اختيار السنة الدراسية';
+                  // Academic Program Dropdown
+                  BlocBuilder<InstitutesBloc, InstitutesState>(
+                    builder: (context, state) {
+                      if (state is AcademicProgramsLoaded) {
+                        _academicPrograms = state.programs;
                       }
-                      return null;
+                      
+                      return DropdownButtonFormField<AcademicProgram>(
+                        value: _selectedProgram,
+                        decoration: const InputDecoration(
+                          labelText: 'البرنامج الأكاديمي',
+                          prefixIcon: Icon(Icons.grade),
+                          border: OutlineInputBorder(),
+                        ),
+                        items: _academicPrograms.map((program) {
+                          return DropdownMenuItem(
+                            value: program,
+                            child: Text(program.nameArabic),
+                          );
+                        }).toList(),
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedProgram = value;
+                          });
+                        },
+                        validator: (value) {
+                          if (value == null) {
+                            return 'يرجى اختيار البرنامج الأكاديمي';
+                          }
+                          return null;
+                        },
+                      );
                     },
                   ),
                   const SizedBox(height: 20),
 
-                  // Profile Image
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'الصورة الشخصية (اختياري)',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          Row(
-                            children: [
-                              if (_profileImagePath != null)
-                                Expanded(
-                                  child: Container(
-                                    height: 100,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(8),
-                                      image: DecorationImage(
-                                        image: AssetImage(_profileImagePath!),
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              const SizedBox(width: 16),
-                              ElevatedButton.icon(
-                                onPressed: _pickImage,
-                                icon: const Icon(Icons.photo_camera),
-                                label: const Text('اختيار صورة'),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 30),
+
 
                   // Register Button
                   BlocBuilder<AuthBloc, AuthState>(

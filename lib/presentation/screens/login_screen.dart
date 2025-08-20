@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../core/di/injection_container.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 import '../../core/theme/app_theme.dart';
 import '../blocs/auth/auth_bloc.dart';
 import '../widgets/custom_text_field.dart';
 import '../widgets/custom_button.dart';
-import 'register_screen.dart';
 import 'dashboard_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -19,22 +20,59 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+
   bool _isPasswordVisible = false;
+  bool _rememberMe = false;
+
+  static const String _savedEmailKey = "saved_email";
+  static const String _savedPasswordKey = "saved_password";
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSavedCredentials();
+  }
+
+  Future<void> _loadSavedCredentials() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedEmail = prefs.getString(_savedEmailKey);
+    final savedPassword = prefs.getString(_savedPasswordKey);
+
+    if (savedEmail != null && savedPassword != null) {
+      setState(() {
+        _emailController.text = savedEmail;
+        _passwordController.text = savedPassword;
+        _rememberMe = true;
+      });
+    }
+  }
+
+  Future<void> _saveCredentials() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (_rememberMe) {
+      await prefs.setString(_savedEmailKey, _emailController.text.trim());
+      await prefs.setString(_savedPasswordKey, _passwordController.text);
+    } else {
+      await prefs.remove(_savedEmailKey);
+      await prefs.remove(_savedPasswordKey);
+    }
+  }
+
+  void _login() {
+    if (_formKey.currentState!.validate()) {
+      _saveCredentials(); // Save or clear credentials
+      context.read<AuthBloc>().add(LoginRequested(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+      ));
+    }
+  }
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
-  }
-
-  void _login() {
-    if (_formKey.currentState!.validate()) {
-      context.read<AuthBloc>().add(LoginRequested(
-        email: _emailController.text.trim(),
-        password: _passwordController.text,
-      ));
-    }
   }
 
   @override
@@ -65,7 +103,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   const SizedBox(height: 60),
-                  
+
                   // App Logo
                   Container(
                     width: 100,
@@ -81,7 +119,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   const SizedBox(height: 30),
-                  
+
                   // Welcome Text
                   const Text(
                     'أهلا بيك في Learn Surveying',
@@ -89,14 +127,14 @@ class _LoginScreenState extends State<LoginScreen> {
                     style: AppTheme.headingStyle,
                   ),
                   const SizedBox(height: 10),
-                  
+
                   const Text(
                     'سجل دخولك للوصول للمحتوى التعليمي',
                     textAlign: TextAlign.center,
                     style: AppTheme.captionStyle,
                   ),
                   const SizedBox(height: 40),
-                  
+
                   // Email Field
                   CustomTextField(
                     controller: _emailController,
@@ -108,14 +146,11 @@ class _LoginScreenState extends State<LoginScreen> {
                       if (value == null || value.isEmpty) {
                         return 'البريد الإلكتروني مطلوب';
                       }
-                      if (!value.endsWith('@gmail.com')) {
-                        return 'يجب أن ينتهي البريد الإلكتروني بـ @gmail.com';
-                      }
                       return null;
                     },
                   ),
                   const SizedBox(height: 20),
-                  
+
                   // Password Field
                   CustomTextField(
                     controller: _passwordController,
@@ -125,7 +160,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     prefixIcon: Icons.lock,
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                        _isPasswordVisible
+                            ? Icons.visibility
+                            : Icons.visibility_off,
                       ),
                       onPressed: () {
                         setState(() {
@@ -143,8 +180,28 @@ class _LoginScreenState extends State<LoginScreen> {
                       return null;
                     },
                   ),
-                  const SizedBox(height: 30),
-                  
+                  const SizedBox(height: 10),
+
+                  // Remember Me
+                  Row(
+                    children: [
+                      Checkbox(
+                        value: _rememberMe,
+                        activeColor: AppTheme.primaryColor,
+                        onChanged: (value) {
+                          setState(() {
+                            _rememberMe = value ?? false;
+                          });
+                        },
+                      ),
+                      const Text(
+                        "تذكر بيانات الدخول",
+                        style: AppTheme.captionStyle,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+
                   // Login Button
                   BlocBuilder<AuthBloc, AuthState>(
                     builder: (context, state) {
@@ -156,7 +213,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     },
                   ),
                   const SizedBox(height: 20),
-                  
+
                   // Register Link
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -167,10 +224,36 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       TextButton(
                         onPressed: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (_) => const RegisterScreen(),
-                            ),
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                title: const Text(
+                                  "طلب إنشاء حساب",
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                                content: const Text(
+                                  "لإنشاء حساب جديد، يرجى التواصل مع الإدارة عبر البريد الإلكتروني:\n\nadmin@example.com\n\nأو عبر رقم الهاتف: +123456789",
+                                  style: TextStyle(fontSize: 14),
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: const Text("إغلاق"),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      launchUrl(
+                                          Uri.parse("mailto:admin@example.com"));
+                                      Navigator.pop(context);
+                                    },
+                                    child: const Text("تواصل الآن"),
+                                  ),
+                                ],
+                              );
+                            },
                           );
                         },
                         child: const Text(
@@ -180,7 +263,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                      ),
+                      )
                     ],
                   ),
                 ],

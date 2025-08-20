@@ -7,6 +7,8 @@ class User extends Equatable {
   final String institute;
   final String year;
   final String department;
+  final String? instituteId;
+  final String? academicProgramId;
   final String? profileImage;
   final int subscriptionDaysLeft;
   final String? whatsappNumber;
@@ -18,6 +20,8 @@ class User extends Equatable {
     required this.institute,
     required this.year,
     required this.department,
+    this.instituteId,
+    this.academicProgramId,
     this.profileImage,
     required this.subscriptionDaysLeft,
     this.whatsappNumber,
@@ -31,6 +35,8 @@ class User extends Equatable {
         institute,
         year,
         department,
+        instituteId,
+        academicProgramId,
         profileImage,
         subscriptionDaysLeft,
         whatsappNumber,

@@ -5,7 +5,7 @@ import '../../core/theme/app_theme.dart';
 import '../blocs/auth/auth_bloc.dart';
 import '../blocs/courses/courses_bloc.dart';
 import '../widgets/subject_card.dart';
-import 'course_content_screen.dart';
+import 'units_screen.dart';
 
 class CoursesScreen extends StatefulWidget {
   const CoursesScreen({super.key});
@@ -24,7 +24,7 @@ class _CoursesScreenState extends State<CoursesScreen> {
   void _loadSubjects() {
     final authState = context.read<AuthBloc>().state;
     if (authState is AuthSuccess) {
-      context.read<CoursesBloc>().add(LoadSubjects(
+      context.read<CoursesBloc>().add(CheckAndLoadSubjects(
         institute: authState.user.institute,
         year: authState.user.year,
       ));
@@ -38,42 +38,76 @@ class _CoursesScreenState extends State<CoursesScreen> {
       appBar: AppBar(
         title: const Text('الدورات'),
       ),
-      body: BlocBuilder<CoursesBloc, CoursesState>(
-        builder: (context, state) {
-          if (state is CoursesLoading) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (state is SubjectsLoaded) {
-            return _buildSubjectsList(state.subjects);
-          } else if (state is CoursesFailure) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(
-                    Icons.error_outline,
-                    size: 64,
-                    color: AppTheme.errorColor,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    state.message,
-                    style: AppTheme.bodyStyle,
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: _loadSubjects,
-                    child: const Text('إعادة المحاولة'),
-                  ),
-                ],
-              ),
-            );
-          }
-          return const Center(
-            child: Text('لا توجد دورات متاحة'),
-          );
-        },
-      ),
+             body: BlocBuilder<CoursesBloc, CoursesState>(
+         builder: (context, state) {
+           if (state is CoursesDataLoaded) {
+             if (state.isLoading) {
+               return const Center(child: CircularProgressIndicator());
+             } else if (state.errorMessage != null) {
+               return Center(
+                 child: Column(
+                   mainAxisAlignment: MainAxisAlignment.center,
+                   children: [
+                     const Icon(
+                       Icons.error_outline,
+                       size: 64,
+                       color: AppTheme.errorColor,
+                     ),
+                     const SizedBox(height: 16),
+                     Text(
+                       state.errorMessage!,
+                       style: AppTheme.bodyStyle,
+                       textAlign: TextAlign.center,
+                     ),
+                     const SizedBox(height: 16),
+                     ElevatedButton(
+                       onPressed: _loadSubjects,
+                       child: const Text('إعادة المحاولة'),
+                     ),
+                   ],
+                 ),
+               );
+             } else if (state.subjects != null && state.subjects!.isNotEmpty) {
+               return _buildSubjectsList(state.subjects!);
+             } else {
+               return const Center(
+                 child: Text('لا توجد دورات متاحة'),
+               );
+             }
+           } else if (state is SubjectsLoaded) {
+             return _buildSubjectsList(state.subjects);
+           } else if (state is CoursesLoading) {
+             return const Center(child: CircularProgressIndicator());
+           } else if (state is CoursesFailure) {
+             return Center(
+               child: Column(
+                 mainAxisAlignment: MainAxisAlignment.center,
+                 children: [
+                   const Icon(
+                     Icons.error_outline,
+                     size: 64,
+                     color: AppTheme.errorColor,
+                   ),
+                   const SizedBox(height: 16),
+                   Text(
+                     state.message,
+                     style: AppTheme.bodyStyle,
+                     textAlign: TextAlign.center,
+                   ),
+                   const SizedBox(height: 16),
+                   ElevatedButton(
+                     onPressed: _loadSubjects,
+                     child: const Text('إعادة المحاولة'),
+                   ),
+                 ],
+               ),
+             );
+           }
+           return const Center(
+             child: Text('لا توجد دورات متاحة'),
+           );
+         },
+       ),
     );
   }
 
@@ -91,7 +125,7 @@ class _CoursesScreenState extends State<CoursesScreen> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => CourseContentScreen(subject: subject),
+                  builder: (_) => UnitsScreen(subject: subject),
                 ),
               );
             },

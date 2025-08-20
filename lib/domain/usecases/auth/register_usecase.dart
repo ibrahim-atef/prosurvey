@@ -14,9 +14,10 @@ class RegisterUseCase {
       fullName: params.fullName,
       email: params.email,
       password: params.password,
+      passwordConfirmation: params.passwordConfirmation,
+      instituteId: params.instituteId,
+      academicProgramId: params.academicProgramId,
       whatsappNumber: params.whatsappNumber,
-      institute: params.institute,
-      year: params.year,
       profileImage: params.profileImage,
     );
   }
@@ -26,18 +27,20 @@ class RegisterParams extends Equatable {
   final String fullName;
   final String email;
   final String password;
-  final String whatsappNumber;
-  final String institute;
-  final String year;
+  final String passwordConfirmation;
+  final String instituteId;
+  final String academicProgramId;
+  final String? whatsappNumber;
   final String? profileImage;
 
   const RegisterParams({
     required this.fullName,
     required this.email,
     required this.password,
-    required this.whatsappNumber,
-    required this.institute,
-    required this.year,
+    required this.passwordConfirmation,
+    required this.instituteId,
+    required this.academicProgramId,
+    this.whatsappNumber,
     this.profileImage,
   });
 
@@ -46,9 +49,10 @@ class RegisterParams extends Equatable {
         fullName,
         email,
         password,
+        passwordConfirmation,
+        instituteId,
+        academicProgramId,
         whatsappNumber,
-        institute,
-        year,
         profileImage,
       ];
 }

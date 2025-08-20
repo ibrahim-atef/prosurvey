@@ -32,3 +32,16 @@ class LoadCourseContent extends CoursesEvent {
   @override
   List<Object> get props => [subjectId, type];
 }
+
+class CheckAndLoadSubjects extends CoursesEvent {
+  final String institute;
+  final String year;
+
+  const CheckAndLoadSubjects({
+    required this.institute,
+    required this.year,
+  });
+
+  @override
+  List<Object> get props => [institute, year];
+}

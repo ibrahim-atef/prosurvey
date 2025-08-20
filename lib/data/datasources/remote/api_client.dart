@@ -1,11 +1,16 @@
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:developer' as developer;
+import '../../../core/config/app_config.dart';
+import '../../../core/error/exceptions.dart';
+
 
 class ApiClient {
   final Dio _dio;
   final SharedPreferences _prefs;
-  
-  static const String baseUrl = 'https://api.learnsurveying.com'; // Mock API URL
+
+  static const String baseUrl = AppConfig.apiBaseUrl;
+  static const String studentBaseUrl = AppConfig.studentBaseUrl;
   static const String tokenKey = 'auth_token';
 
   ApiClient(this._dio, this._prefs) {
@@ -14,9 +19,10 @@ class ApiClient {
 
   void _setupDio() {
     _dio.options.baseUrl = baseUrl;
-    _dio.options.connectTimeout = const Duration(seconds: 30);
-    _dio.options.receiveTimeout = const Duration(seconds: 30);
-    
+    _dio.options.connectTimeout =
+        Duration(seconds: AppConfig.connectionTimeout);
+    _dio.options.receiveTimeout = Duration(seconds: AppConfig.receiveTimeout);
+
     _dio.interceptors.add(InterceptorsWrapper(
       onRequest: (options, handler) async {
         final token = _prefs.getString(tokenKey);
@@ -36,58 +42,113 @@ class ApiClient {
     ));
   }
 
-  Future<Response> get(String path, {Map<String, dynamic>? queryParameters}) async {
+  Future<Response> get(String path,
+      {Map<String, dynamic>? queryParameters, bool useStudentBase = false}) async {
     try {
-      final response = await _dio.get(path, queryParameters: queryParameters);
+      final fullUrl = useStudentBase ? '$path' : '$baseUrl$path';
+      developer.log('🌐 API GET Request: $fullUrl', name: 'ApiClient');
+      developer.log('📋 Query Parameters: $queryParameters', name: 'ApiClient');
+      
+      final response = await _dio.get(fullUrl, queryParameters: queryParameters);
+      
+      developer.log('✅ API GET Success: ${response.statusCode}', name: 'ApiClient');
+      developer.log('📄 Response Data: ${response.data}', name: 'ApiClient');
+      
       return response;
     } on DioException catch (e) {
+      developer.log('❌ API GET Error: ${e.message}', name: 'ApiClient');
+      developer.log('🔍 Error Type: ${e.type}', name: 'ApiClient');
+      developer.log('📊 Status Code: ${e.response?.statusCode}', name: 'ApiClient');
+      developer.log('📄 Error Response: ${e.response?.data}', name: 'ApiClient');
+      developer.log('🔗 Request URL: ${e.requestOptions.uri}', name: 'ApiClient');
+      developer.log('📋 Request Headers: ${e.requestOptions.headers}', name: 'ApiClient');
+      
       throw _handleDioError(e);
+    } catch (e) {
+      developer.log('💥 Unexpected Error in GET: $e', name: 'ApiClient');
+      throw ServerException('Unexpected error: $e');
     }
   }
 
-  Future<Response> post(String path, {dynamic data, Map<String, dynamic>? queryParameters}) async {
+  Future<Response> post(String path,
+      {dynamic data, Map<String, dynamic>? queryParameters}) async {
     try {
-      final response = await _dio.post(path, data: data, queryParameters: queryParameters);
+      developer.log('🌐 API POST Request: $path', name: 'ApiClient');
+      developer.log('📋 Query Parameters: $queryParameters', name: 'ApiClient');
+      developer.log('📦 Request Data: $data', name: 'ApiClient');
+      
+      final response =
+          await _dio.post(path, data: data, queryParameters: queryParameters);
+      
+      developer.log('✅ API POST Success: ${response.statusCode}', name: 'ApiClient');
+      developer.log('📄 Response Data: ${response.data}', name: 'ApiClient');
+      
       return response;
     } on DioException catch (e) {
+      developer.log('❌ API POST Error: ${e.message}', name: 'ApiClient');
+      developer.log('🔍 Error Type: ${e.type}', name: 'ApiClient');
+      developer.log('📊 Status Code: ${e.response?.statusCode}', name: 'ApiClient');
+      developer.log('📄 Error Response: ${e.response?.data}', name: 'ApiClient');
+      developer.log('🔗 Request URL: ${e.requestOptions.uri}', name: 'ApiClient');
+      developer.log('📋 Request Headers: ${e.requestOptions.headers}', name: 'ApiClient');
+      developer.log('📦 Request Data: ${e.requestOptions.data}', name: 'ApiClient');
+      
       throw _handleDioError(e);
+    } catch (e) {
+      developer.log('💥 Unexpected Error in POST: $e', name: 'ApiClient');
+      throw ServerException('Unexpected error: $e');
     }
   }
 
-  Future<Response> put(String path, {dynamic data, Map<String, dynamic>? queryParameters}) async {
+  Future<Response> put(String path,
+      {dynamic data, Map<String, dynamic>? queryParameters}) async {
     try {
-      final response = await _dio.put(path, data: data, queryParameters: queryParameters);
+      final response =
+          await _dio.put(path, data: data, queryParameters: queryParameters);
       return response;
     } on DioException catch (e) {
       throw _handleDioError(e);
+    } catch (e) {
+      throw ServerException('Unexpected error: $e');
     }
   }
 
-  Future<Response> delete(String path, {Map<String, dynamic>? queryParameters}) async {
+  Future<Response> delete(String path,
+      {Map<String, dynamic>? queryParameters}) async {
     try {
-      final response = await _dio.delete(path, queryParameters: queryParameters);
+      final response =
+          await _dio.delete(path, queryParameters: queryParameters);
       return response;
     } on DioException catch (e) {
       throw _handleDioError(e);
+    } catch (e) {
+      throw ServerException('Unexpected error: $e');
     }
   }
 
   Exception _handleDioError(DioException error) {
+    developer.log('🔧 Processing DioException: ${error.type}', name: 'ApiClient');
+    
     switch (error.type) {
       case DioExceptionType.connectionTimeout:
       case DioExceptionType.sendTimeout:
       case DioExceptionType.receiveTimeout:
-        return Exception('Connection timeout');
+        developer.log('⏰ Timeout Error: ${error.type}', name: 'ApiClient');
+        return ServerException('Connection timeout');
       case DioExceptionType.badResponse:
         final statusCode = error.response?.statusCode;
         final message = error.response?.data?['message'] ?? 'Server error';
-        return Exception('HTTP $statusCode: $message');
+        developer.log('🚫 Bad Response: HTTP $statusCode - $message', name: 'ApiClient');
+        return ServerException('HTTP $statusCode: $message');
       case DioExceptionType.cancel:
-        return Exception('Request cancelled');
+        developer.log('❌ Request Cancelled', name: 'ApiClient');
+        return ServerException('Request cancelled');
       case DioExceptionType.connectionError:
-        return Exception('No internet connection');
+        developer.log('🌐 Connection Error: No internet connection', name: 'ApiClient');
+        return ServerException('No internet connection');
       default:
-        return Exception('Network error');
+        developer.log('❓ Unknown Error Type: ${error.type}', name: 'ApiClient');
+        return ServerException('Network error');
     }
   }
 

@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 
 class Subject extends Equatable {
-  final String id;
+  final int id;
   final String name;
   final String nameArabic;
   final String icon;

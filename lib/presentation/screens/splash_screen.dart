@@ -90,7 +90,7 @@ class _SplashScreenState extends State<SplashScreen>
                 
                 // App Name
                 const Text(
-                  'Learn Surveying',
+                  'Mesaha',
                   style: TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,

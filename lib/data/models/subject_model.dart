@@ -15,15 +15,15 @@ class SubjectModel extends Subject {
 
   factory SubjectModel.fromJson(Map<String, dynamic> json) {
     return SubjectModel(
-      id: json['id'],
-      name: json['name'],
-      nameArabic: json['name_arabic'],
-      icon: json['icon'],
-      videoCount: json['video_count'],
-      pdfCount: json['pdf_count'],
-      examCount: json['exam_count'],
-      institute: json['institute'],
-      year: json['year'],
+      id: json['id'] as int? ?? 1,
+      name: json['subject_name'] ?? json['name'] ?? '',
+      nameArabic: json['subject_name'] ?? json['name_arabic'] ?? '',
+      icon: json['icon'] ?? 'book',
+      videoCount: json['video_count'] ?? 0,
+      pdfCount: json['pdf_count'] ?? 0,
+      examCount: json['exam_count'] ?? 0,
+      institute: json['institute'] ?? 'المطرية',
+      year: json['program_name'] ?? json['year'] ?? 'سنة أولى',
     );
   }
 

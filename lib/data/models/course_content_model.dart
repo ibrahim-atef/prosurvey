@@ -15,16 +15,17 @@ class CourseContentModel extends CourseContent {
 
   factory CourseContentModel.fromJson(Map<String, dynamic> json) {
     return CourseContentModel(
-      id: json['id'],
-      title: json['title'],
-      subjectId: json['subject_id'],
+      id: json['id']?.toString() ?? '1',
+      title: json['title'] ?? '',
+      subjectId: json['subject_id']?.toString() ?? '1',
       type: ContentType.values.firstWhere(
-        (e) => e.toString().split('.').last == json['type'],
+        (e) => e.toString().split('.').last == json['type_name'] || e.toString().split('.').last == json['type'],
+        orElse: () => ContentType.video,
       ),
-      url: json['url'],
+      url: json['url'] ?? '',
       thumbnail: json['thumbnail'],
-      description: json['description'],
-      duration: json['duration'],
+      description: json['description'] ?? '',
+      duration: json['duration_minutes'] != null ? json['duration_minutes'] * 60 : json['duration'],
       fileSize: json['file_size'],
     );
   }

@@ -14,18 +14,21 @@ class UserModel extends User {
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
+    final userJson = json['data'] != null ? json['data']['user'] ?? json : json;
+
     return UserModel(
-      id: json['id'],
-      name: json['name'],
-      email: json['email'],
-      institute: json['institute'],
-      year: json['year'],
-      department: json['department'],
-      profileImage: json['profile_image'],
-      subscriptionDaysLeft: json['subscription_days_left'],
-      whatsappNumber: json['whatsapp_number'],
+      id: userJson['id']?.toString() ?? '1',
+      name: userJson['full_name'] ?? userJson['name'] ?? '',
+      email: userJson['email'] ?? '',
+      institute: userJson['institute_name'] ?? userJson['institute'] ?? '',
+      year: userJson['program_name'] ?? userJson['year'] ?? '',
+      department: userJson['role_display_name'] ?? userJson['department'] ?? 'طالب',
+      profileImage: userJson['profile_picture_path'], // fixed key
+      subscriptionDaysLeft: userJson['days_remaining'] ?? userJson['subscription_days_left'] ?? 0,
+      whatsappNumber: userJson['whatsapp_number'] ?? '',
     );
   }
+
 
   Map<String, dynamic> toJson() {
     return {

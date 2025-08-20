@@ -5,6 +5,8 @@ import '../../../domain/usecases/auth/login_usecase.dart';
 import '../../../domain/usecases/auth/register_usecase.dart';
 import '../../../domain/usecases/auth/logout_usecase.dart';
 import '../../../core/error/failures.dart';
+import '../../../core/di/injection_container.dart';
+import '../../../data/datasources/local/local_storage.dart';
 
 part 'auth_event.dart';
 part 'auth_state.dart';
@@ -49,9 +51,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       fullName: event.fullName,
       email: event.email,
       password: event.password,
+      passwordConfirmation: event.passwordConfirmation,
+      instituteId: event.instituteId,
+      academicProgramId: event.academicProgramId,
       whatsappNumber: event.whatsappNumber,
-      institute: event.institute,
-      year: event.year,
       profileImage: event.profileImage,
     ));
 
@@ -79,9 +82,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     CheckAuthStatus event,
     Emitter<AuthState> emit,
   ) async {
-    // This would typically check if user is logged in from local storage
-    // For now, we'll emit initial state
-    emit(AuthInitial());
+    // Check if user is logged in from local storage
+    final localStorage = sl<LocalStorage>();
+    final isLoggedIn = localStorage.isLoggedIn();
+    final user = localStorage.getUser();
+    final token = localStorage.getToken();
+    
+    if (isLoggedIn && user != null && token != null) {
+      emit(AuthSuccess(user));
+    } else {
+      emit(AuthInitial());
+    }
   }
 
   String _mapFailureToMessage(Failure failure) {

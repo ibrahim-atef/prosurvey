@@ -5,7 +5,7 @@ class MockData {
   // Sample subjects for سنة أولى (المطرية)
   static const List<Map<String, dynamic>> subjectsFirstYearMataria = [
     {
-      'id': '1',
+      'id': 1,
       'name': 'Geodesy',
       'name_arabic': 'ت.المساحة الجيوديسية',
       'icon': 'explore',
@@ -16,7 +16,7 @@ class MockData {
       'year': 'سنة أولى',
     },
     {
-      'id': '2',
+      'id': 2,
       'name': 'Error Theory',
       'name_arabic': 'نظرية الأخطاء',
       'icon': 'analytics',
@@ -27,7 +27,7 @@ class MockData {
       'year': 'سنة أولى',
     },
     {
-      'id': '3',
+      'id': 3,
       'name': 'Quantities',
       'name_arabic': 'كميات ومواصفات',
       'icon': 'calculate',
@@ -38,7 +38,7 @@ class MockData {
       'year': 'سنة أولى',
     },
     {
-      'id': '4',
+      'id': 4,
       'name': 'Technical Drawing',
       'name_arabic': 'رسم تخصصي',
       'icon': 'draw',
@@ -49,7 +49,7 @@ class MockData {
       'year': 'سنة أولى',
     },
     {
-      'id': '5',
+      'id': 5,
       'name': 'Soil',
       'name_arabic': 'تربة ومحاصيل',
       'icon': 'eco',
@@ -60,7 +60,7 @@ class MockData {
       'year': 'سنة أولى',
     },
     {
-      'id': '6',
+      'id': 6,
       'name': 'Technology',
       'name_arabic': 'تكنولوجيا',
       'icon': 'computer',
@@ -71,7 +71,7 @@ class MockData {
       'year': 'سنة أولى',
     },
     {
-      'id': '7',
+      'id': 7,
       'name': 'Laws',
       'name_arabic': 'قوانين وتشريعات',
       'icon': 'gavel',
@@ -82,6 +82,95 @@ class MockData {
       'year': 'سنة أولى',
     },
   ];
+
+  // Sample units for testing
+  static const List<Map<String, dynamic>> sampleUnits = [
+    {
+      'id': 1,
+      'unit_title': 'الأعداد والعمليات الحسابية',
+      'unit_number': 1,
+      'description': 'الأعداد الأساسية والعمليات الحسابية في المساحة',
+      'learning_objectives': null,
+      'estimated_duration_hours': 2,
+      'display_order': 1,
+      'subject_id': 1,
+      'subject_name': 'الرياضيات التطبيقية',
+      'subject_code': 'GIS_ا?_25',
+      'content_count': 1
+    },
+    {
+      'id': 2,
+      'unit_title': 'الكسور والعمليات عليها',
+      'unit_number': 2,
+      'description': 'الكسور والعمليات الحسابية عليها',
+      'learning_objectives': null,
+      'estimated_duration_hours': 2,
+      'display_order': 2,
+      'subject_id': 1,
+      'subject_name': 'الرياضيات التطبيقية',
+      'subject_code': 'GIS_ا?_25',
+      'content_count': 0
+    },
+    {
+      'id': 3,
+      'unit_title': 'النسب المئوية',
+      'unit_number': 3,
+      'description': 'النسب المئوية وتطبيقاتها في المساحة',
+      'learning_objectives': null,
+      'estimated_duration_hours': 2,
+      'display_order': 3,
+      'subject_id': 1,
+      'subject_name': 'الرياضيات التطبيقية',
+      'subject_code': 'GIS_ا?_25',
+      'content_count': 0
+    }
+  ];
+
+  // Sample unit content for testing
+  static const Map<String, dynamic> sampleUnitContent = {
+    'unit': {
+      'id': 1,
+      'unit_title': 'الأعداد والعمليات الحسابية',
+      'unit_number': 1,
+      'description': 'الأعداد الأساسية والعمليات الحسابية في المساحة',
+      'learning_objectives': null,
+      'estimated_duration_hours': 2,
+      'subject_id': 1,
+      'subject_name': 'الرياضيات التطبيقية',
+      'subject_code': 'GIS_ا?_25'
+    },
+    'content': [
+      {
+        'id': 1,
+        'title': 'دليل المساحة الجيوديسية',
+        'description': 'دليل شامل للمساحة الجيوديسية',
+        'file_path': 'D:\\12 final 2024.pdf',
+        'file_size_mb': '0.47',
+        'duration_minutes': null,
+        'thumbnail_path': null,
+        'is_free': 1,
+        'display_order': 1,
+        'download_count': 0,
+        'view_count': 0,
+        'upload_date': '2025-08-19 14:06:25',
+        'content_type_id': 2,
+        'type_name': 'pdf'
+      }
+    ],
+    'content_type_breakdown': [
+      {
+        'id': 2,
+        'type_name': 'pdf',
+        'count': 1
+      }
+    ],
+    'pagination': {
+      'total': 1,
+      'limit': 20,
+      'offset': 0,
+      'has_more': false
+    }
+  };
 
   // Sample course content
   static const List<Map<String, dynamic>> courseContent = [

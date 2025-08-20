@@ -8,9 +8,10 @@ abstract class AuthRepository {
     required String fullName,
     required String email,
     required String password,
-    required String whatsappNumber,
-    required String institute,
-    required String year,
+    required String passwordConfirmation,
+    required String instituteId,
+    required String academicProgramId,
+    String? whatsappNumber,
     String? profileImage,
   });
   Future<Either<Failure, void>> logout();

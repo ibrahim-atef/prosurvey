@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:url_launcher/url_launcher.dart';
-import '../../core/di/injection_container.dart';
 import '../../core/theme/app_theme.dart';
 import '../blocs/auth/auth_bloc.dart';
 import '../widgets/subscription_card.dart';
 import 'courses_screen.dart';
 import 'exams_screen.dart';
+import 'login_screen.dart';
 import 'videos_screen.dart';
 import 'pdfs_screen.dart';
 import 'sheets_screen.dart';
 import 'contact_us_screen.dart';
+import 'institutes_screen.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -26,6 +26,7 @@ class DashboardScreen extends StatelessWidget {
             icon: const Icon(Icons.logout),
             onPressed: () {
               context.read<AuthBloc>().add(LogoutRequested());
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const LoginScreen()));
             },
           ),
         ],
@@ -133,6 +134,7 @@ class DashboardScreen extends StatelessWidget {
             mainAxisSpacing: 16,
             childAspectRatio: 1.2,
             children: [
+
               _buildMenuCard(
                 context,
                 'الدورات',

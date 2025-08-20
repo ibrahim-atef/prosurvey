@@ -47,6 +47,9 @@ dependencies:
   # URL Launcher
   url_launcher:
   
+  # Web View
+  webview_flutter:
+  
   # Form Validation
   form_validator:
   
