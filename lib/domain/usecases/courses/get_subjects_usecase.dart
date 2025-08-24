@@ -9,8 +9,8 @@ class GetSubjectsUseCase {
 
   GetSubjectsUseCase(this.repository);
 
-  Future<Either<Failure, List<Subject>>> call(GetSubjectsParams params) async {
-    return await repository.getSubjects(params.institute, params.year);
+  Future<Either<Failure, List<Subject>>> call() async {
+    return await repository.getSubjects();
   }
 }
 

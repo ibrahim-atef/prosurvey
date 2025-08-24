@@ -9,8 +9,8 @@ class GetExamsUseCase {
 
   GetExamsUseCase(this.repository);
 
-  Future<Either<Failure, List<Exam>>> call(GetExamsParams params) async {
-    return await repository.getExams(params.subjectId);
+  Future<Either<Failure, List<Exam>>> call() async {
+    return await repository.getExams('');
   }
 }
 

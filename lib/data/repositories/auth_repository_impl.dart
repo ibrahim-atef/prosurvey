@@ -16,51 +16,47 @@ class AuthRepositoryImpl implements AuthRepository {
   AuthRepositoryImpl(this._apiClient, this._localStorage);
 
   @override
-  Future<Either<Failure, User>> login(String email, String password) async {
+  Future<Either<Failure, User>> login({
+    required String email,
+    required String password,
+  }) async {
     try {
       developer.log('🔐 Login Attempt: $email', name: 'AuthRepository');
-      developer.log('⚙️ Using Mock Data: ${AppConfig.useMockData}', name: 'AuthRepository');
 
-      if (AppConfig.useMockData) {
-        developer.log('🎭 Using Mock Data for Login', name: 'AuthRepository');
-        await Future.delayed(const Duration(seconds: 1)); // Simulate API delay
+      developer.log('🌐 Using Real API for Login', name: 'AuthRepository');
+      
+      // Debug current token status
+      final currentToken = _localStorage.getToken();
+      developer.log('🔍 Current stored token: ${currentToken != null ? "Found (${currentToken.length} chars)" : "None"}', name: 'AuthRepository');
 
-        final data = MockData.loginResponse['data'];
+      final response = await _apiClient.post('/login', data: {
+        'email': email,
+        'password': password,
+      });
+
+      developer.log('📊 Login Response Status: ${response.statusCode}', name: 'AuthRepository');
+      developer.log('📄 Login Response Data: ${response.data}', name: 'AuthRepository');
+
+      if (response.statusCode == 200 && response.data['success'] == true) {
+        final data = response.data['data'];
         final user = UserModel.fromJson(data['user']);
         final token = data['token'];
 
         await _localStorage.saveUser(user);
         await _localStorage.saveToken(token);
+        _apiClient.setToken(token); // Ensure ApiClient also has the token
         await _localStorage.setLoggedIn(true);
 
-        developer.log('✅ Mock Login Success: ${user.name}', name: 'AuthRepository');
+        // Verify token was saved
+        final savedToken = _localStorage.getToken();
+        developer.log('🔍 Token verification - Saved: ${savedToken != null ? "Yes (${savedToken.length} chars)" : "No"}', name: 'AuthRepository');
+        developer.log('🔍 ApiClient token status: ${_apiClient.isAuthenticated ? "Authenticated" : "Not authenticated"}', name: 'AuthRepository');
+
+        developer.log('✅ Real Login Success: ${user.name}', name: 'AuthRepository');
         return Right(user);
       } else {
-        developer.log('🌐 Using Real API for Login', name: 'AuthRepository');
-
-        final response = await _apiClient.post('/login', data: {
-          'email': email,
-          'password': password,
-        });
-
-        developer.log('📊 Login Response Status: ${response.statusCode}', name: 'AuthRepository');
-        developer.log('📄 Login Response Data: ${response.data}', name: 'AuthRepository');
-
-        if (response.statusCode == 200 && response.data['success'] == true) {
-          final data = response.data['data'];
-          final user = UserModel.fromJson(data['user']);
-          final token = data['token'];
-
-          await _localStorage.saveUser(user);
-          await _localStorage.saveToken(token);
-          await _localStorage.setLoggedIn(true);
-
-          developer.log('✅ Real Login Success: ${user.name}', name: 'AuthRepository');
-          return Right(user);
-        } else {
-          developer.log('❌ Login Failed: Invalid response', name: 'AuthRepository');
-          return const Left(AuthFailure('Login failed'));
-        }
+        developer.log('❌ Login Failed: Invalid response', name: 'AuthRepository');
+        return const Left(AuthFailure('Login failed'));
       }
     } catch (e) {
       developer.log('💥 Login Error: $e', name: 'AuthRepository');
@@ -107,6 +103,7 @@ class AuthRepositoryImpl implements AuthRepository {
         // Save user and token locally
         await _localStorage.saveUser(user);
         await _localStorage.saveToken(token);
+        _apiClient.setToken(token); // Ensure ApiClient also has the token
         await _localStorage.setLoggedIn(true);
 
         developer.log('✅ Register Success: ${user.name}', name: 'AuthRepository');

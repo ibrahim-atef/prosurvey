@@ -21,15 +21,19 @@ import '../../domain/usecases/courses/get_course_content_usecase.dart';
 import '../../domain/usecases/courses/get_units_usecase.dart';
 import '../../domain/usecases/courses/get_unit_content_usecase.dart';
 import '../../domain/usecases/exams/get_exams_usecase.dart';
+import '../../domain/usecases/exams/get_available_exams_usecase.dart';
+import '../../domain/usecases/exams/get_exam_details_usecase.dart';
 import '../../domain/usecases/exams/submit_exam_usecase.dart';
 import '../../domain/usecases/institutes/get_institutes_usecase.dart';
 import '../../domain/usecases/content/get_content_usecase.dart';
+import '../../domain/usecases/courses/get_pdf_content_usecase.dart';
 import '../../presentation/blocs/auth/auth_bloc.dart';
 import '../../presentation/blocs/courses/courses_bloc.dart';
 import '../../presentation/blocs/units/units_cubit.dart';
 import '../../presentation/blocs/content/content_cubit.dart';
 import '../../presentation/blocs/exams/exams_bloc.dart';
 import '../../presentation/blocs/institutes/institutes_bloc.dart';
+import '../../presentation/blocs/pdf_content/pdf_content_cubit.dart';
 
 final GetIt sl = GetIt.instance;
 
@@ -61,6 +65,8 @@ Future<void> initializeDependencies() async {
   sl.registerLazySingleton(() => GetUnitsUseCase(sl()));
   sl.registerLazySingleton(() => GetUnitContentUseCase(sl()));
   sl.registerLazySingleton(() => GetExamsUseCase(sl()));
+  sl.registerLazySingleton(() => GetAvailableExamsUseCase(sl()));
+  sl.registerLazySingleton(() => GetExamDetailsUseCase(sl()));
   sl.registerLazySingleton(() => SubmitExamUseCase(sl()));
   sl.registerLazySingleton(() => GetInstitutesUseCase(sl()));
   sl.registerLazySingleton(() => GetInstituteDetailsUseCase(sl()));
@@ -70,16 +76,18 @@ Future<void> initializeDependencies() async {
   sl.registerLazySingleton(() => GetEducationalContentUseCase(sl()));
   sl.registerLazySingleton(() => GetContentByTypeUseCase(sl()));
   sl.registerLazySingleton(() => UpdateContentViewCountUseCase(sl()));
+  sl.registerLazySingleton(() => GetPdfContentUseCase(sl()));
   
   // BLoCs
   sl.registerFactory(() => AuthBloc(sl(), sl(), sl()));
   sl.registerFactory(() => CoursesBloc(sl(), sl()));
   sl.registerFactory(() => UnitsCubit(sl()));
   sl.registerFactory(() => ContentCubit(sl()));
-  sl.registerFactory(() => ExamsBloc(sl(), sl()));
+  sl.registerFactory(() => ExamsBloc(sl(), sl(), sl()));
   sl.registerFactory(() => InstitutesBloc(
     getInstitutesUseCase: sl(),
     getInstituteDetailsUseCase: sl(),
     getAcademicProgramsUseCase: sl(),
   ));
+  sl.registerFactory(() => PdfContentCubit(sl()));
 }

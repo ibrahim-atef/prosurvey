@@ -26,14 +26,21 @@ class ApiClient {
     _dio.interceptors.add(InterceptorsWrapper(
       onRequest: (options, handler) async {
         final token = _prefs.getString(tokenKey);
+        developer.log('🔍 Interceptor - Request URL: ${options.uri}', name: 'ApiClient');
+        developer.log('🔍 Interceptor - Token found: ${token != null}', name: 'ApiClient');
         if (token != null) {
-          options.headers['Authorization'] = 'Bearer $token';
+          options.headers['Authorization'] = '$token';
+          developer.log('🔑 Interceptor - Added Authorization header', name: 'ApiClient');
+        } else {
+          developer.log('⚠️ Interceptor - No token found, request will be unauthorized', name: 'ApiClient');
         }
+        developer.log('📋 Interceptor - Final headers: ${options.headers}', name: 'ApiClient');
         handler.next(options);
       },
       onError: (error, handler) {
         // Handle common errors
         if (error.response?.statusCode == 401) {
+          developer.log('🚫 Interceptor - 401 Unauthorized, clearing token', name: 'ApiClient');
           // Token expired, clear and redirect to login
           _prefs.remove(tokenKey);
         }
@@ -49,7 +56,11 @@ class ApiClient {
       developer.log('🌐 API GET Request: $fullUrl', name: 'ApiClient');
       developer.log('📋 Query Parameters: $queryParameters', name: 'ApiClient');
       
-      final response = await _dio.get(fullUrl, queryParameters: queryParameters);
+      // Token is automatically added by the interceptor
+      final response = await _dio.get(
+        fullUrl, 
+        queryParameters: queryParameters,
+      );
       
       developer.log('✅ API GET Success: ${response.statusCode}', name: 'ApiClient');
       developer.log('📄 Response Data: ${response.data}', name: 'ApiClient');
@@ -77,8 +88,12 @@ class ApiClient {
       developer.log('📋 Query Parameters: $queryParameters', name: 'ApiClient');
       developer.log('📦 Request Data: $data', name: 'ApiClient');
       
-      final response =
-          await _dio.post(path, data: data, queryParameters: queryParameters);
+      // Token is automatically added by the interceptor
+      final response = await _dio.post(
+        path, 
+        data: data,
+        queryParameters: queryParameters,
+      );
       
       developer.log('✅ API POST Success: ${response.statusCode}', name: 'ApiClient');
       developer.log('📄 Response Data: ${response.data}', name: 'ApiClient');
@@ -153,10 +168,18 @@ class ApiClient {
   }
 
   void setToken(String token) {
+    developer.log('🔑 Setting token in ApiClient: ${token.substring(0, token.length > 10 ? 10 : token.length)}...', name: 'ApiClient');
     _prefs.setString(tokenKey, token);
   }
 
   void clearToken() {
     _prefs.remove(tokenKey);
   }
+
+  bool get isAuthenticated {
+    final token = _prefs.getString(tokenKey);
+    return token != null && token.isNotEmpty;
+  }
+
+  String? get currentToken => _prefs.getString(tokenKey);
 }

@@ -3,10 +3,10 @@ import 'package:video_player/video_player.dart';
 import 'package:chewie/chewie.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../core/theme/app_theme.dart';
-import '../../domain/entities/unit_content.dart';
+import '../../domain/entities/base_content.dart';
 
 class VideoPlayerScreen extends StatefulWidget {
-  final ContentItem content;
+  final BaseContent content;
 
   const VideoPlayerScreen({
     super.key,

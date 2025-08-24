@@ -3,23 +3,60 @@ import '../../domain/entities/exam.dart';
 class ExamModel extends Exam {
   const ExamModel({
     required super.id,
-    required super.title,
-    required super.subjectId,
-    required super.questions,
-    required super.timeLimit,
-    required super.totalScore,
+    required super.examTitle,
+    required super.description,
+    required super.totalQuestions,
+    required super.timeLimitMinutes,
+    required super.passingScore,
   });
 
   factory ExamModel.fromJson(Map<String, dynamic> json) {
     return ExamModel(
       id: json['id'],
+      examTitle: json['exam_title'],
+      description: json['description'],
+      totalQuestions: json['total_questions'],
+      timeLimitMinutes: json['time_limit_minutes'],
+      passingScore: json['passing_score'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'exam_title': examTitle,
+      'description': description,
+      'total_questions': totalQuestions,
+      'time_limit_minutes': timeLimitMinutes,
+      'passing_score': passingScore,
+    };
+  }
+}
+
+class ExamInfoModel extends ExamInfo {
+  const ExamInfoModel({
+    required super.id,
+    required super.title,
+    required super.description,
+    required super.subjectName,
+    required super.totalQuestions,
+    required super.timeLimitMinutes,
+    required super.passingPercentage,
+    required super.totalQuestionsCount,
+    required super.instructions,
+  });
+
+  factory ExamInfoModel.fromJson(Map<String, dynamic> json) {
+    return ExamInfoModel(
+      id: json['id'],
       title: json['title'],
-      subjectId: json['subject_id'],
-      questions: (json['questions'] as List)
-          .map((question) => QuestionModel.fromJson(question))
-          .toList(),
-      timeLimit: json['time_limit'],
-      totalScore: json['total_score'],
+      description: json['description'],
+      subjectName: json['subject_name'],
+      totalQuestions: json['total_questions'],
+      timeLimitMinutes: json['time_limit_minutes'],
+      passingPercentage: json['passing_percentage'],
+      totalQuestionsCount: json['total_questions_count'],
+      instructions: ExamInstructionsModel.fromJson(json['instructions']),
     );
   }
 
@@ -27,10 +64,40 @@ class ExamModel extends Exam {
     return {
       'id': id,
       'title': title,
-      'subject_id': subjectId,
-      'questions': questions.map((q) => (q as QuestionModel).toJson()).toList(),
-      'time_limit': timeLimit,
-      'total_score': totalScore,
+      'description': description,
+      'subject_name': subjectName,
+      'total_questions': totalQuestions,
+      'time_limit_minutes': timeLimitMinutes,
+      'passing_percentage': passingPercentage,
+      'total_questions_count': totalQuestionsCount,
+      'instructions': (instructions as ExamInstructionsModel).toJson(),
+    };
+  }
+}
+
+class ExamInstructionsModel extends ExamInstructions {
+  const ExamInstructionsModel({
+    required super.readAllQuestionsCarefully,
+    required super.manageYourTime,
+    required super.answerAllQuestions,
+    required super.checkYourAnswers,
+  });
+
+  factory ExamInstructionsModel.fromJson(Map<String, dynamic> json) {
+    return ExamInstructionsModel(
+      readAllQuestionsCarefully: json['read_all_questions_carefully'],
+      manageYourTime: json['manage_your_time'],
+      answerAllQuestions: json['answer_all_questions'],
+      checkYourAnswers: json['check_your_answers'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'read_all_questions_carefully': readAllQuestionsCarefully,
+      'manage_your_time': manageYourTime,
+      'answer_all_questions': answerAllQuestions,
+      'check_your_answers': checkYourAnswers,
     };
   }
 }
@@ -38,19 +105,47 @@ class ExamModel extends Exam {
 class QuestionModel extends Question {
   const QuestionModel({
     required super.id,
-    required super.text,
+    required super.questionText,
+    required super.questionType,
+    required super.marks,
     required super.options,
-    required super.correctAnswerIndex,
-    required super.score,
   });
 
   factory QuestionModel.fromJson(Map<String, dynamic> json) {
     return QuestionModel(
       id: json['id'],
+      questionText: json['question_text'],
+      questionType: json['question_type'],
+      marks: json['marks'],
+      options: (json['options'] as List)
+          .map((option) => QuestionOptionModel.fromJson(option))
+          .toList(),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'question_text': questionText,
+      'question_type': questionType,
+      'marks': marks,
+      'options': options.map((o) => (o as QuestionOptionModel).toJson()).toList(),
+    };
+  }
+}
+
+class QuestionOptionModel extends QuestionOption {
+  const QuestionOptionModel({
+    required super.id,
+    required super.text,
+    required super.optionOrder,
+  });
+
+  factory QuestionOptionModel.fromJson(Map<String, dynamic> json) {
+    return QuestionOptionModel(
+      id: json['id'],
       text: json['text'],
-      options: List<String>.from(json['options']),
-      correctAnswerIndex: json['correct_answer_index'],
-      score: json['score'],
+      optionOrder: json['option_order'],
     );
   }
 
@@ -58,9 +153,7 @@ class QuestionModel extends Question {
     return {
       'id': id,
       'text': text,
-      'options': options,
-      'correct_answer_index': correctAnswerIndex,
-      'score': score,
+      'option_order': optionOrder,
     };
   }
 }

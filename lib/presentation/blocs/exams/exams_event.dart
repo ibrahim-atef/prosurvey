@@ -8,14 +8,19 @@ abstract class ExamsEvent extends Equatable {
 }
 
 class LoadExams extends ExamsEvent {
-  final String subjectId;
-
-  const LoadExams({
-    required this.subjectId,
-  });
+  const LoadExams();
 
   @override
-  List<Object> get props => [subjectId];
+  List<Object> get props => [];
+}
+
+class LoadExamDetails extends ExamsEvent {
+  final int examId;
+
+  const LoadExamDetails(this.examId);
+
+  @override
+  List<Object> get props => [examId];
 }
 
 class SubmitExam extends ExamsEvent {

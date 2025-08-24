@@ -33,10 +33,7 @@ class CoursesBloc extends Bloc<CoursesEvent, CoursesState> {
       emit(const CoursesDataLoaded(isLoading: true));
     }
 
-    final result = await _getSubjectsUseCase(GetSubjectsParams(
-      institute: event.institute,
-      year: event.year,
-    ));
+    final result = await _getSubjectsUseCase();
 
     result.fold(
       (failure) {
@@ -102,9 +99,6 @@ class CoursesBloc extends Bloc<CoursesEvent, CoursesState> {
     }
     
     // Load subjects if not available
-    await _onLoadSubjects(LoadSubjects(
-      institute: event.institute,
-      year: event.year,
-    ), emit);
+    await _onLoadSubjects(const LoadSubjects(), emit);
   }
 }

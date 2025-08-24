@@ -11,16 +11,25 @@ class ExamsInitial extends ExamsState {}
 
 class ExamsLoading extends ExamsState {}
 
-class ExamSubmitting extends ExamsState {}
-
 class ExamsLoaded extends ExamsState {
   final List<Exam> exams;
 
   const ExamsLoaded(this.exams);
 
   @override
-  List<Object> get props => [exams];
+  List<Object?> get props => [exams];
 }
+
+class ExamDetailsLoaded extends ExamsState {
+  final ExamDetails examDetails;
+
+  const ExamDetailsLoaded(this.examDetails);
+
+  @override
+  List<Object?> get props => [examDetails];
+}
+
+class ExamSubmitting extends ExamsState {}
 
 class ExamSubmitted extends ExamsState {
   final ExamResult result;
@@ -28,7 +37,7 @@ class ExamSubmitted extends ExamsState {
   const ExamSubmitted(this.result);
 
   @override
-  List<Object> get props => [result];
+  List<Object?> get props => [result];
 }
 
 class ExamsFailure extends ExamsState {
@@ -37,5 +46,5 @@ class ExamsFailure extends ExamsState {
   const ExamsFailure(this.message);
 
   @override
-  List<Object> get props => [message];
+  List<Object?> get props => [message];
 }

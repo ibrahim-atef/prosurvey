@@ -1,5 +1,4 @@
 import '../../domain/entities/unit_content.dart';
-import 'unit_model.dart';
 
 class UnitContentModel extends UnitContent {
   const UnitContentModel({
@@ -11,7 +10,7 @@ class UnitContentModel extends UnitContent {
 
   factory UnitContentModel.fromJson(Map<String, dynamic> json) {
     return UnitContentModel(
-      unit: UnitModel.fromJson(json['unit'] as Map<String, dynamic>),
+      unit: UnitInfoModel.fromJson(json['unit'] as Map<String, dynamic>),
       content: (json['content'] as List<dynamic>)
           .map((item) => ContentItemModel.fromJson(item as Map<String, dynamic>))
           .toList(),
@@ -19,6 +18,34 @@ class UnitContentModel extends UnitContent {
           .map((item) => ContentTypeBreakdownModel.fromJson(item as Map<String, dynamic>))
           .toList(),
       pagination: PaginationModel.fromJson(json['pagination'] as Map<String, dynamic>),
+    );
+  }
+}
+
+class UnitInfoModel extends UnitInfo {
+  const UnitInfoModel({
+    required super.id,
+    required super.unitTitle,
+    required super.unitNumber,
+    required super.description,
+    super.learningObjectives,
+    required super.estimatedDurationHours,
+    required super.subjectId,
+    required super.subjectName,
+    required super.subjectCode,
+  });
+
+  factory UnitInfoModel.fromJson(Map<String, dynamic> json) {
+    return UnitInfoModel(
+      id: json['id'] as int? ?? 0,
+      unitTitle: json['unit_title'] as String? ?? '',
+      unitNumber: json['unit_number'] as int? ?? 0,
+      description: json['description'] as String? ?? '',
+      learningObjectives: json['learning_objectives'] as String?,
+      estimatedDurationHours: json['estimated_duration_hours'] as int? ?? 0,
+      subjectId: json['subject_id'] as int? ?? 0,
+      subjectName: json['subject_name'] as String? ?? '',
+      subjectCode: json['subject_code'] as String? ?? '',
     );
   }
 }

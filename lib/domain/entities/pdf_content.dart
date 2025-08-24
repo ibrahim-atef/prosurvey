@@ -1,66 +1,22 @@
 import 'package:equatable/equatable.dart';
 import 'base_content.dart';
 
-class UnitContent extends Equatable {
-  final UnitInfo unit;
-  final List<ContentItem> content;
-  final List<ContentTypeBreakdown> contentTypeBreakdown;
+class PdfContentResponse extends Equatable {
+  final List<PdfContentItem> content;
+  final dynamic contentTypeInfo; // null in current response
   final Pagination pagination;
 
-  const UnitContent({
-    required this.unit,
+  const PdfContentResponse({
     required this.content,
-    required this.contentTypeBreakdown,
+    this.contentTypeInfo,
     required this.pagination,
   });
 
   @override
-  List<Object?> get props => [
-        unit,
-        content,
-        contentTypeBreakdown,
-        pagination,
-      ];
+  List<Object?> get props => [content, contentTypeInfo, pagination];
 }
 
-class UnitInfo extends Equatable {
-  final int id;
-  final String unitTitle;
-  final int unitNumber;
-  final String description;
-  final String? learningObjectives;
-  final int estimatedDurationHours;
-  final int subjectId;
-  final String subjectName;
-  final String subjectCode;
-
-  const UnitInfo({
-    required this.id,
-    required this.unitTitle,
-    required this.unitNumber,
-    required this.description,
-    this.learningObjectives,
-    required this.estimatedDurationHours,
-    required this.subjectId,
-    required this.subjectName,
-    required this.subjectCode,
-  });
-
-  @override
-  List<Object?> get props => [
-        id,
-        unitTitle,
-        unitNumber,
-        description,
-        learningObjectives,
-        estimatedDurationHours,
-        subjectId,
-        subjectName,
-        subjectCode,
-      ];
-}
-
-class ContentItem extends Equatable implements BaseContent {
+class PdfContentItem extends Equatable implements BaseContent {
   final int id;
   final String title;
   final String description;
@@ -75,8 +31,14 @@ class ContentItem extends Equatable implements BaseContent {
   final String uploadDate;
   final int contentTypeId;
   final String typeName;
+  final int unitId;
+  final String unitTitle;
+  final int unitNumber;
+  final int subjectId;
+  final String subjectName;
+  final String subjectCode;
 
-  const ContentItem({
+  const PdfContentItem({
     required this.id,
     required this.title,
     required this.description,
@@ -91,6 +53,12 @@ class ContentItem extends Equatable implements BaseContent {
     required this.uploadDate,
     required this.contentTypeId,
     required this.typeName,
+    required this.unitId,
+    required this.unitTitle,
+    required this.unitNumber,
+    required this.subjectId,
+    required this.subjectName,
+    required this.subjectCode,
   });
 
   @override
@@ -109,22 +77,13 @@ class ContentItem extends Equatable implements BaseContent {
         uploadDate,
         contentTypeId,
         typeName,
+        unitId,
+        unitTitle,
+        unitNumber,
+        subjectId,
+        subjectName,
+        subjectCode,
       ];
-}
-
-class ContentTypeBreakdown extends Equatable {
-  final int id;
-  final String typeName;
-  final int count;
-
-  const ContentTypeBreakdown({
-    required this.id,
-    required this.typeName,
-    required this.count,
-  });
-
-  @override
-  List<Object?> get props => [id, typeName, count];
 }
 
 class Pagination extends Equatable {

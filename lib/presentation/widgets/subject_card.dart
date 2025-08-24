@@ -53,12 +53,12 @@ class SubjectCard extends StatelessWidget {
                     const SizedBox(height: 8),
                     
                     // Content Counts
-                    Row(
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 4,
                       children: [
                         _buildContentCount(Icons.video_library, subject.videoCount, 'فيديو'),
-                        const SizedBox(width: 16),
                         _buildContentCount(Icons.picture_as_pdf, subject.pdfCount, 'PDF'),
-                        const SizedBox(width: 16),
                         _buildContentCount(Icons.quiz, subject.examCount, 'امتحان'),
                       ],
                     ),

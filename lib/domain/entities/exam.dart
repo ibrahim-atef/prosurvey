@@ -1,56 +1,130 @@
 import 'package:equatable/equatable.dart';
 
 class Exam extends Equatable {
-  final String id;
-  final String title;
-  final String subjectId;
-  final List<Question> questions;
-  final int timeLimit; // in minutes
-  final int totalScore;
+  final int id;
+  final String examTitle;
+  final String description;
+  final int totalQuestions;
+  final int timeLimitMinutes;
+  final int passingScore;
 
   const Exam({
     required this.id,
+    required this.examTitle,
+    required this.description,
+    required this.totalQuestions,
+    required this.timeLimitMinutes,
+    required this.passingScore,
+  });
+
+  @override
+  List<Object?> get props => [
+        id,
+        examTitle,
+        description,
+        totalQuestions,
+        timeLimitMinutes,
+        passingScore,
+      ];
+}
+
+class ExamInfo extends Equatable {
+  final int id;
+  final String title;
+  final String description;
+  final String subjectName;
+  final int totalQuestions;
+  final int timeLimitMinutes;
+  final int passingPercentage;
+  final int totalQuestionsCount;
+  final ExamInstructions instructions;
+
+  const ExamInfo({
+    required this.id,
     required this.title,
-    required this.subjectId,
-    required this.questions,
-    required this.timeLimit,
-    required this.totalScore,
+    required this.description,
+    required this.subjectName,
+    required this.totalQuestions,
+    required this.timeLimitMinutes,
+    required this.passingPercentage,
+    required this.totalQuestionsCount,
+    required this.instructions,
   });
 
   @override
   List<Object?> get props => [
         id,
         title,
-        subjectId,
-        questions,
-        timeLimit,
-        totalScore,
+        description,
+        subjectName,
+        totalQuestions,
+        timeLimitMinutes,
+        passingPercentage,
+        totalQuestionsCount,
+        instructions,
+      ];
+}
+
+class ExamInstructions extends Equatable {
+  final String readAllQuestionsCarefully;
+  final String manageYourTime;
+  final String answerAllQuestions;
+  final String checkYourAnswers;
+
+  const ExamInstructions({
+    required this.readAllQuestionsCarefully,
+    required this.manageYourTime,
+    required this.answerAllQuestions,
+    required this.checkYourAnswers,
+  });
+
+  @override
+  List<Object?> get props => [
+        readAllQuestionsCarefully,
+        manageYourTime,
+        answerAllQuestions,
+        checkYourAnswers,
       ];
 }
 
 class Question extends Equatable {
-  final String id;
-  final String text;
-  final List<String> options;
-  final int correctAnswerIndex;
-  final int score;
+  final int id;
+  final String questionText;
+  final String questionType;
+  final int marks;
+  final List<QuestionOption> options;
 
   const Question({
     required this.id,
-    required this.text,
+    required this.questionText,
+    required this.questionType,
+    required this.marks,
     required this.options,
-    required this.correctAnswerIndex,
-    required this.score,
   });
 
   @override
   List<Object?> get props => [
         id,
-        text,
+        questionText,
+        questionType,
+        marks,
         options,
-        correctAnswerIndex,
-        score,
       ];
+}
+
+class QuestionOption extends Equatable {
+  final int id;
+  final String text;
+  final int optionOrder;
+
+  const QuestionOption({
+    required this.id,
+    required this.text,
+    required this.optionOrder,
+  });
+
+  @override
+  List<Object?> get props => [id, text, optionOrder];
 }
 
 class ExamResult extends Equatable {

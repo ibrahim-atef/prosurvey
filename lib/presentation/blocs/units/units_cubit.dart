@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
-import '../../../domain/entities/unit.dart' show StudyUnit;
+import '../../../domain/entities/study_unit.dart';
 import '../../../domain/usecases/courses/get_units_usecase.dart';
 import '../../../core/error/failures.dart';
 

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../core/theme/app_theme.dart';
-import '../../domain/entities/unit.dart' show StudyUnit;
+import '../../domain/entities/study_unit.dart';
 import '../../domain/entities/unit_content.dart';
+import '../../domain/entities/base_content.dart';
 import '../blocs/content/content_cubit.dart';
 import 'video_player_screen.dart';
 import 'pdf_viewer_screen.dart';
@@ -37,7 +38,7 @@ class _UnitContentScreenState extends State<UnitContentScreen>
   }
 
   void _loadContent() {
-    context.read<ContentCubit>().loadUnitContent(widget.unit.id);
+    context.read<ContentCubit>().loadUnitContent(int.parse(widget.unit.id));
   }
 
   @override
@@ -45,7 +46,22 @@ class _UnitContentScreenState extends State<UnitContentScreen>
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
       appBar: AppBar(
-        title: Text(widget.unit.unitTitle),
+        title: BlocBuilder<ContentCubit, ContentState>(
+          builder: (context, state) {
+            if (state is ContentLoaded) {
+              return Text(
+                state.unitContent.unit.unitTitle,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+              );
+            }
+            return Text(
+              widget.unit.titleArabic,
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+            );
+          },
+        ),
         bottom: TabBar(
           controller: _tabController,
           tabs: const [
@@ -131,7 +147,7 @@ class _UnitContentScreenState extends State<UnitContentScreen>
            );
          }
 
-  Widget _buildContentCard(ContentItem content) {
+  Widget _buildContentCard(BaseContent content) {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: ListTile(
@@ -196,7 +212,7 @@ class _UnitContentScreenState extends State<UnitContentScreen>
     );
   }
 
-  Widget _buildContentTrailing(ContentItem content) {
+  Widget _buildContentTrailing(BaseContent content) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -235,7 +251,7 @@ class _UnitContentScreenState extends State<UnitContentScreen>
     );
   }
 
-  void _openContent(ContentItem content) {
+  void _openContent(BaseContent content) {
     switch (content.typeName.toLowerCase()) {
       case 'video':
         Navigator.push(

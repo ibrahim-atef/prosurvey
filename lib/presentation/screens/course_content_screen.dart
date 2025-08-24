@@ -6,6 +6,7 @@ import '../blocs/courses/courses_bloc.dart';
 import '../../domain/entities/subject.dart';
 import '../../domain/entities/course_content.dart';
 import '../../domain/entities/unit_content.dart';
+import '../../domain/entities/base_content.dart';
 import 'video_player_screen.dart';
 import 'pdf_viewer_screen.dart';
 
@@ -45,8 +46,8 @@ class _CourseContentScreenState extends State<CourseContentScreen>
     ));
   }
 
-  // Helper function to convert CourseContent to ContentItem
-  ContentItem _convertToContentItem(CourseContent content) {
+  // Helper function to convert CourseContent to BaseContent
+  BaseContent _convertToContentItem(CourseContent content) {
     return ContentItem(
       id: int.tryParse(content.id) ?? 0,
       title: content.title,

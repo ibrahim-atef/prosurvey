@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
 import '../../../core/error/failures.dart';
 import '../../../core/usecases/usecase.dart';
-import '../../entities/unit.dart';
+import '../../entities/study_unit.dart';
 import '../../repositories/course_repository.dart';
 
 class GetUnitsUseCase implements UseCase<List<StudyUnit>, GetUnitsParams> {

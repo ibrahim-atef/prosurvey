@@ -8,16 +8,10 @@ abstract class CoursesEvent extends Equatable {
 }
 
 class LoadSubjects extends CoursesEvent {
-  final String institute;
-  final String year;
-
-  const LoadSubjects({
-    required this.institute,
-    required this.year,
-  });
+  const LoadSubjects();
 
   @override
-  List<Object> get props => [institute, year];
+  List<Object> get props => [];
 }
 
 class LoadCourseContent extends CoursesEvent {
@@ -34,14 +28,8 @@ class LoadCourseContent extends CoursesEvent {
 }
 
 class CheckAndLoadSubjects extends CoursesEvent {
-  final String institute;
-  final String year;
-
-  const CheckAndLoadSubjects({
-    required this.institute,
-    required this.year,
-  });
+  const CheckAndLoadSubjects();
 
   @override
-  List<Object> get props => [institute, year];
+  List<Object> get props => [];
 }
