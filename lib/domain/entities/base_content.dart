@@ -16,3 +16,5 @@ abstract class BaseContent extends Equatable {
   int get contentTypeId;
   String get typeName;
 }
+
+

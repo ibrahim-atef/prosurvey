@@ -12,3 +12,5 @@ class GetAvailableExamsUseCase {
     return await repository.getAvailableExams();
   }
 }
+
+

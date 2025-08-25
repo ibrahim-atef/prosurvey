@@ -67,10 +67,10 @@ class _CoursesScreenState extends State<CoursesScreen>
       _filteredSubjects = subjects;
     } else {
       _filteredSubjects = subjects.where((subject) {
-        final title = subject.title?.toString().toLowerCase() ?? '';
-        final code = subject.code?.toString().toLowerCase() ?? '';
+        final name = subject.name?.toString().toLowerCase() ?? '';
+        final nameArabic = subject.nameArabic?.toString().toLowerCase() ?? '';
         final query = _searchQuery.toLowerCase();
-        return title.contains(query) || code.contains(query);
+        return name.contains(query) || nameArabic.contains(query);
       }).toList();
     }
   }
@@ -90,6 +90,12 @@ class _CoursesScreenState extends State<CoursesScreen>
       appBar: _buildAppBar(),
       body: BlocBuilder<CoursesBloc, CoursesState>(
          builder: (context, state) {
+           // Debug logging
+           print('🔍 CoursesScreen State: ${state.runtimeType}');
+           if (state is CoursesDataLoaded) {
+             print('📊 CoursesDataLoaded - isLoading: ${state.isLoading}, errorMessage: ${state.errorMessage}, subjectsCount: ${state.subjects?.length}');
+           }
+           
            if (state is CoursesDataLoaded) {
              if (state.isLoading) {
                return _buildLoadingState();
@@ -102,12 +108,15 @@ class _CoursesScreenState extends State<CoursesScreen>
                return _buildEmptyState();
              }
            } else if (state is SubjectsLoaded) {
+             print('📚 SubjectsLoaded - subjectsCount: ${state.subjects.length}');
              _filterSubjects(state.subjects);
              return _buildSubjectsContent(state.subjects);
            } else if (state is CoursesLoading) {
              return _buildLoadingState();
            } else if (state is CoursesFailure) {
              return _buildErrorState(state.message, _loadSubjects);
+           } else if (state is CoursesInitial) {
+             return _buildLoadingState();
            }
            return _buildEmptyState();
          },
@@ -160,6 +169,11 @@ class _CoursesScreenState extends State<CoursesScreen>
             onChanged: (value) {
               setState(() {
                 _searchQuery = value;
+              });
+            },
+            onClear: () {
+              setState(() {
+                _searchQuery = '';
               });
             },
           ),
@@ -243,8 +257,14 @@ class _CoursesScreenState extends State<CoursesScreen>
   }
 
   Widget _buildSubjectsList(List<dynamic> subjects) {
-    return ListView.builder(
+    return GridView.builder(
       padding: DesignSystem.paddingH16,
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: 16,
+        mainAxisSpacing: 16,
+        childAspectRatio: 0.85,
+      ),
       itemCount: subjects.length,
       itemBuilder: (context, index) {
         final subject = subjects[index];
@@ -252,19 +272,16 @@ class _CoursesScreenState extends State<CoursesScreen>
           opacity: _fadeAnimation,
           child: SlideTransition(
             position: _slideAnimation,
-            child: Padding(
-              padding: const EdgeInsets.only(bottom: 16),
-              child: SubjectCard(
-                subject: subject,
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => UnitsScreen(subject: subject),
-                    ),
-                  );
-                },
-              ),
+            child: SubjectCard(
+              subject: subject,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => UnitsScreen(subject: subject),
+                  ),
+                );
+              },
             ),
           ),
         );

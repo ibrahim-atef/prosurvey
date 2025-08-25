@@ -18,3 +18,5 @@ class GetPdfContentUseCase implements UseCase<PdfContentResponse, NoParams> {
 class NoParams {
   const NoParams();
 }
+
+

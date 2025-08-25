@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
-import '../../domain/entities/subject.dart';
+import '../../domain/entities/study_unit.dart';
 
-class SubjectCard extends StatelessWidget {
-  final Subject subject;
+class UnitCard extends StatelessWidget {
+  final StudyUnit unit;
   final VoidCallback onTap;
 
-  const SubjectCard({
+  const UnitCard({
     super.key,
-    required this.subject,
+    required this.unit,
     required this.onTap,
   });
 
@@ -24,7 +24,7 @@ class SubjectCard extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Subject Icon
+              // Unit Number Icon
               Container(
                 width: 60,
                 height: 60,
@@ -32,17 +32,19 @@ class SubjectCard extends StatelessWidget {
                   color: AppTheme.primaryColor.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Icon(
-                  _getSubjectIcon(subject.name),
-                  color: AppTheme.primaryColor,
-                  size: 30,
+                child: Center(
+                  child:  Icon(
+                    Icons.numbers,
+                    color: AppTheme.primaryColor,
+                    size: 30,
+                  ),
                 ),
               ),
               const SizedBox(height: 12),
               
-              // Subject Name
+              // Unit Title
               Text(
-                subject.nameArabic,
+                unit.titleArabic,
                 style: AppTheme.subheadingStyle.copyWith(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
@@ -53,6 +55,22 @@ class SubjectCard extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               
+              // Unit Description
+              if (unit.description != null && unit.description!.isNotEmpty)
+                Text(
+                  unit.description!,
+                  style: AppTheme.captionStyle.copyWith(
+                    fontSize: 11,
+                    color: AppTheme.textSecondaryColor,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
+                ),
+              
+              const SizedBox(height: 8),
+              
+              // Unit Type Indicators
 
             ],
           ),
@@ -61,42 +79,24 @@ class SubjectCard extends StatelessWidget {
     );
   }
 
-  Widget _buildContentCount(IconData icon, int count, String label) {
+  Widget _buildUnitIndicator(IconData icon, String label) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
       children: [
         Icon(
           icon,
-          size: 14,
+          size: 12,
           color: AppTheme.textSecondaryColor,
         ),
-        const SizedBox(width: 4),
+        const SizedBox(width: 2),
         Text(
-          '$count $label',
-          style: AppTheme.captionStyle.copyWith(fontSize: 11),
+          label,
+          style: AppTheme.captionStyle.copyWith(
+            fontSize: 10,
+            color: AppTheme.textSecondaryColor,
+          ),
         ),
       ],
     );
-  }
-
-  IconData _getSubjectIcon(String subjectName) {
-    switch (subjectName.toLowerCase()) {
-      case 'geodesy':
-        return Icons.explore;
-      case 'error theory':
-        return Icons.analytics;
-      case 'quantities':
-        return Icons.calculate;
-      case 'technical drawing':
-        return Icons.draw;
-      case 'soil':
-        return Icons.eco;
-      case 'technology':
-        return Icons.computer;
-      case 'laws':
-        return Icons.gavel;
-      default:
-        return Icons.school;
-    }
   }
 }

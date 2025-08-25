@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/utils/url_utils.dart';
 import '../../domain/entities/base_content.dart';
 
 class PDFViewerScreen extends StatefulWidget {
@@ -29,43 +30,65 @@ class _PDFViewerScreenState extends State<PDFViewerScreen> {
   }
 
   void _initializeWebView() {
-    _controller = WebViewController()
-      ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setNavigationDelegate(
-        NavigationDelegate(
-          onProgress: (int progress) {
-            if (progress == 100) {
+    try {
+      final String fullUrl = UrlUtils.buildFullUrl(widget.content.filePath);
+      final Uri? uri = UrlUtils.parseUrl(fullUrl);
+      
+      if (uri == null) {
+        throw Exception('Invalid URL format: $fullUrl');
+      }
+      
+      _controller = WebViewController()
+        ..setJavaScriptMode(JavaScriptMode.unrestricted)
+        ..setNavigationDelegate(
+          NavigationDelegate(
+            onProgress: (int progress) {
+              if (progress == 100) {
+                setState(() {
+                  _isLoading = false;
+                });
+              }
+            },
+            onPageStarted: (String url) {
+              setState(() {
+                _isLoading = true;
+                _hasError = false;
+              });
+            },
+            onPageFinished: (String url) {
               setState(() {
                 _isLoading = false;
               });
-            }
-          },
-          onPageStarted: (String url) {
-            setState(() {
-              _isLoading = true;
-              _hasError = false;
-            });
-          },
-          onPageFinished: (String url) {
-            setState(() {
-              _isLoading = false;
-            });
-          },
-          onWebResourceError: (WebResourceError error) {
-            setState(() {
-              _isLoading = false;
-              _hasError = true;
-              _errorMessage = 'خطأ في تحميل الملف: ${error.description}';
-            });
-          },
-        ),
-      )
-      ..loadRequest(Uri.parse(widget.content.filePath));
+            },
+            onWebResourceError: (WebResourceError error) {
+              setState(() {
+                _isLoading = false;
+                _hasError = true;
+                _errorMessage = 'خطأ في تحميل الملف: ${error.description}';
+              });
+            },
+          ),
+        )
+        ..loadRequest(uri);
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+        _hasError = true;
+        _errorMessage = 'خطأ في تحميل الملف: $e';
+      });
+    }
   }
 
   Future<void> _openInExternalApp() async {
     try {
-      final url = Uri.parse(widget.content.filePath);
+      final String fullUrl = UrlUtils.buildFullUrl(widget.content.filePath);
+      final Uri? url = UrlUtils.parseUrl(fullUrl);
+      
+      if (url == null) {
+        _showErrorSnackBar('رابط الملف غير صحيح');
+        return;
+      }
+      
       if (await canLaunchUrl(url)) {
         await launchUrl(url, mode: LaunchMode.externalApplication);
       } else {
@@ -164,6 +187,19 @@ class _PDFViewerScreenState extends State<PDFViewerScreen> {
             ),
             textAlign: TextAlign.center,
           ),
+          const SizedBox(height: 8),
+          if (_errorMessage.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Text(
+                _errorMessage,
+                style: AppTheme.bodyStyle.copyWith(
+                  color: AppTheme.errorColor,
+                  fontSize: 12,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
           const SizedBox(height: 8),
 
           const SizedBox(height: 20),

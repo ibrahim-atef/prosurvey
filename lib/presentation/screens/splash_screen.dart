@@ -109,7 +109,7 @@ class _SplashScreenState extends State<SplashScreen>
               children: [
                 // Top section with decorative elements
                 Expanded(
-                  flex: 2,
+                  flex: 1,
                   child: Container(
                     width: double.infinity,
                     decoration: BoxDecoration(
@@ -165,7 +165,7 @@ class _SplashScreenState extends State<SplashScreen>
                 
                 // Main content section
                 Expanded(
-                  flex: 3,
+                  flex:4,
                   child: Padding(
                     padding: DesignSystem.sectionPadding,
                     child: Column(
@@ -243,7 +243,7 @@ class _SplashScreenState extends State<SplashScreen>
                             child: Column(
                               children: [
                                 Text(
-                                  'Mesaha',
+                                  'معهد المساحه',
                                   style: AppTheme.displayLarge.copyWith(
                                     color: Colors.white,
                                     fontWeight: FontWeight.w800,

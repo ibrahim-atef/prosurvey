@@ -3,6 +3,7 @@ import 'package:video_player/video_player.dart';
 import 'package:chewie/chewie.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/utils/url_utils.dart';
 import '../../domain/entities/base_content.dart';
 
 class VideoPlayerScreen extends StatefulWidget {
@@ -37,9 +38,14 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
         _hasError = false;
       });
 
-      _videoPlayerController = VideoPlayerController.networkUrl(
-        Uri.parse(widget.content.filePath),
-      );
+      final String fullUrl = UrlUtils.buildFullUrl(widget.content.filePath);
+      final Uri? uri = UrlUtils.parseUrl(fullUrl);
+      
+      if (uri == null) {
+        throw Exception('Invalid URL format: $fullUrl');
+      }
+      
+      _videoPlayerController = VideoPlayerController.networkUrl(uri);
 
       await _videoPlayerController.initialize();
 
@@ -78,7 +84,14 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
 
   Future<void> _openInExternalApp() async {
     try {
-      final url = Uri.parse(widget.content.filePath);
+      final String fullUrl = UrlUtils.buildFullUrl(widget.content.filePath);
+      final Uri? url = UrlUtils.parseUrl(fullUrl);
+      
+      if (url == null) {
+        _showErrorSnackBar('رابط الفيديو غير صحيح');
+        return;
+      }
+      
       if (await canLaunchUrl(url)) {
         await launchUrl(url, mode: LaunchMode.externalApplication);
       } else {
@@ -270,16 +283,16 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 20),
-          ElevatedButton.icon(
-            onPressed: _openInExternalApp,
-            icon: const Icon(Icons.open_in_new),
-            label: const Text('فتح في تطبيق خارجي'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppTheme.primaryColor,
-              foregroundColor: Colors.white,
-            ),
-          ),
-          const SizedBox(height: 12),
+          // ElevatedButton.icon(
+          //   onPressed: _openInExternalApp,
+          //   icon: const Icon(Icons.open_in_new),
+          //   label: const Text('فتح في تطبيق خارجي'),
+          //   style: ElevatedButton.styleFrom(
+          //     backgroundColor: AppTheme.primaryColor,
+          //     foregroundColor: Colors.white,
+          //   ),
+          // ),
+          // const SizedBox(height: 12),
           ElevatedButton.icon(
             onPressed: () {
               _chewieController?.dispose();

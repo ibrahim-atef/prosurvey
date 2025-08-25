@@ -2,27 +2,27 @@ import 'package:flutter/material.dart';
 
 class AppTheme {
   // Brand Colors - Using the provided color palette
-  static const Color primaryColor = Color(0xFF154D71);      // Deep Blue
-  static const Color secondaryColor = Color(0xFF1C6EA4);    // Medium Blue
-  static const Color accentColor = Color(0xFF33A1E0);       // Light Blue
-  static const Color highlightColor = Color(0xFFFFF9AF);    // Warm Yellow
+  static const Color primaryColor = Color(0xFFDA9C15);      // Main Gold Color
+  static const Color secondaryColor = Color(0xFFF8C704);    // Bright Gold
+  static const Color accentColor = Color(0xFFD17B1B);       // Dark Orange
+  static const Color highlightColor = Color(0xFF000000);    // Black
   
   // Semantic Colors
-  static const Color backgroundColor = Color(0xFFF8FAFC);   // Light Gray-Blue
-  static const Color surfaceColor = Colors.white;
+  static const Color backgroundColor = Color(0xFF1A1A1A);   // Dark Background
+  static const Color surfaceColor = Color(0xFF2A2A2A);      // Dark Surface
   static const Color errorColor = Color(0xFFDC2626);        // Red
   static const Color successColor = Color(0xFF059669);      // Green
   static const Color warningColor = Color(0xFFD97706);      // Orange
   static const Color infoColor = Color(0xFF0891B2);         // Cyan
   
   // Text Colors
-  static const Color textPrimaryColor = Color(0xFF1E293B);  // Dark Blue-Gray
-  static const Color textSecondaryColor = Color(0xFF64748B); // Medium Blue-Gray
-  static const Color textTertiaryColor = Color(0xFF94A3B8); // Light Blue-Gray
+  static const Color textPrimaryColor = Color(0xFFFFFFFF);  // White
+  static const Color textSecondaryColor = Color(0xFFCCCCCC); // Light Gray
+  static const Color textTertiaryColor = Color(0xFF999999); // Medium Gray
   
   // Border & Divider Colors
-  static const Color borderColor = Color(0xFFE2E8F0);
-  static const Color dividerColor = Color(0xFFF1F5F9);
+  static const Color borderColor = Color(0xFF404040);
+  static const Color dividerColor = Color(0xFF333333);
   
   // Shadow Colors
   static const Color shadowColor = Color(0x1A000000);
@@ -38,13 +38,13 @@ class AppTheme {
   static const LinearGradient accentGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [accentColor, secondaryColor],
+    colors: [accentColor, primaryColor],
   );
   
   static const LinearGradient highlightGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [highlightColor, Color(0xFFFFE066)],
+    colors: [secondaryColor, Color(0xFFFFE066)],
   );
 
   // Text Styles with improved hierarchy
@@ -153,15 +153,15 @@ class AppTheme {
       fontFamily: 'Cairo',
       colorScheme: ColorScheme.fromSeed(
         seedColor: primaryColor,
-        brightness: Brightness.light,
+        brightness: Brightness.dark,
         primary: primaryColor,
         secondary: secondaryColor,
         tertiary: accentColor,
         surface: surfaceColor,
         background: backgroundColor,
         error: errorColor,
-        onPrimary: Colors.white,
-        onSecondary: Colors.white,
+        onPrimary: Colors.black,
+        onSecondary: Colors.black,
         onTertiary: Colors.white,
         onSurface: textPrimaryColor,
         onBackground: textPrimaryColor,
@@ -248,7 +248,7 @@ class AppTheme {
       // Input Decoration Theme
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: Colors.grey[50],
+        fillColor: const Color(0xFF333333),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(radius12),
           borderSide: const BorderSide(color: borderColor),
@@ -381,8 +381,8 @@ class AppTheme {
       
       // Chip Theme
       chipTheme: ChipThemeData(
-        backgroundColor: Colors.grey[100],
-        selectedColor: primaryColor.withOpacity(0.1),
+        backgroundColor: const Color(0xFF404040),
+        selectedColor: primaryColor.withOpacity(0.3),
         labelStyle: const TextStyle(
           color: textPrimaryColor,
           fontFamily: 'Cairo',

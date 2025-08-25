@@ -101,7 +101,7 @@ class _DashboardScreenState extends State<DashboardScreen>
           ),
           const SizedBox(width: 12),
           Text(
-            'Learn Surveying',
+            'معهد المساحه',
             style: AppTheme.titleStyle.copyWith(
               color: AppTheme.textPrimaryColor,
             ),

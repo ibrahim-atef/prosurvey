@@ -16,7 +16,7 @@ class CoursesBloc extends Bloc<CoursesEvent, CoursesState> {
   CoursesBloc(
     this._getSubjectsUseCase, 
     this._getCourseContentUseCase,
-  ) : super(const CoursesDataLoaded()) {
+  ) : super(CoursesInitial()) {
     on<LoadSubjects>(_onLoadSubjects);
     on<LoadCourseContent>(_onLoadCourseContent);
     on<CheckAndLoadSubjects>(_onCheckAndLoadSubjects);
@@ -47,15 +47,8 @@ class CoursesBloc extends Bloc<CoursesEvent, CoursesState> {
         }
       },
       (subjects) {
-        if (currentState is CoursesDataLoaded) {
-          emit(currentState.copyWith(
-            subjects: subjects,
-            isLoading: false,
-            errorMessage: null,
-          ));
-        } else {
-          emit(CoursesDataLoaded(subjects: subjects));
-        }
+        // Emit SubjectsLoaded state for backward compatibility
+        emit(SubjectsLoaded(subjects));
       },
     );
   }
@@ -93,7 +86,7 @@ class CoursesBloc extends Bloc<CoursesEvent, CoursesState> {
     Emitter<CoursesState> emit,
   ) async {
     final currentState = state;
-    if (currentState is CoursesDataLoaded && currentState.subjects != null) {
+    if (currentState is SubjectsLoaded) {
       // Data already exists, no need to reload
       return;
     }
